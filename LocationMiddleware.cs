@@ -2,8 +2,8 @@
 
 public class LocationMiddleware
 {
-    private RequestDelegate next;
-    private MessageOptions options;
+    private readonly RequestDelegate next;
+    private readonly MessageOptions options;
 
     public LocationMiddleware(RequestDelegate nextDelegate, MessageOptions opts)
     {
