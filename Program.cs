@@ -3,7 +3,7 @@ using Platform;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 WebApplication app = builder.Build();
 
-((IApplicationBuilder)app).Map("/branch", branch =>
+app.Map("/branch", branch =>
 {
     branch.UseMiddleware<QueryStringMiddleware>();
     branch.Use(async (HttpContext context, Func<Task> next) =>
@@ -22,7 +22,7 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Path == "/short")
     {
-        await context.Response.WriteAsync($"Request Short Circuited");
+        await context.Response.WriteAsync("Request Short Circuited");
     }
     else
     {
