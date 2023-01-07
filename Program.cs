@@ -1,7 +1,19 @@
+using Microsoft.Extensions.Options;
 using Platform;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<MessageOptions>(options =>
+{
+    options.CityName = "Albany";
+});
+
 WebApplication app = builder.Build();
+app.MapGet("/location", async (HttpContext context, IOptions<MessageOptions> msgOpts) =>
+{
+    MessageOptions opts = msgOpts.Value;
+    await context.Response.WriteAsync($"{opts.CityName}, {opts.CountryName}");
+});
 
 app.Map("/branch", branch =>
 {
