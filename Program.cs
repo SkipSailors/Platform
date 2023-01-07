@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Options;
 using Platform;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
