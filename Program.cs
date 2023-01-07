@@ -9,11 +9,6 @@ builder.Services.Configure<MessageOptions>(options =>
 });
 
 WebApplication app = builder.Build();
-app.MapGet("/location", async (HttpContext context, IOptions<MessageOptions> msgOpts) =>
-{
-    MessageOptions opts = msgOpts.Value;
-    await context.Response.WriteAsync($"{opts.CityName}, {opts.CountryName}");
-});
 
 app.Map("/branch", branch =>
 {
@@ -50,6 +45,12 @@ app.Use(async (context, next) =>
 });
 
 app.UseMiddleware<QueryStringMiddleware>();
+
+app.MapGet("/location", async (HttpContext context, IOptions<MessageOptions> msgOpts) =>
+{
+    MessageOptions opts = msgOpts.Value;
+    await context.Response.WriteAsync($"{opts.CityName}, {opts.CountryName}");
+});
 
 app.MapGet("/", () => "Hello World!");
 
