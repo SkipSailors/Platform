@@ -15,7 +15,15 @@ public static class Capital
                 capital = "Paris";
                 break;
             case "monaco":
-                context.Response.Redirect($"/population/{country}");
+                LinkGenerator? generator = context
+                    .RequestServices
+                    .GetRequiredService<LinkGenerator>();
+                string? url = generator
+                    .GetPathByRouteValues(context, "population", new { city = country });
+                if (url != null)
+                {
+                    context.Response.Redirect($"/population/{country}");
+                }
                 return;
         }
 
