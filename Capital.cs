@@ -6,7 +6,7 @@ public class Capital
     {
         string? capital = null;
         string? country = context.Request.RouteValues["country"] as string;
-        switch (country.ToLower())
+        switch ((country ?? string.Empty).ToLower())
         {
             case "uk":
                 capital = "London";

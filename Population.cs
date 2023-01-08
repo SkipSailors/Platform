@@ -5,19 +5,13 @@ public class Population
     public static async Task Endpoint(HttpContext context)
     {
         string? city = context.Request.RouteValues["city"] as string;
-        int? pop = null;
-        switch ((city ?? string.Empty).ToLower())
+        int? pop = (city ?? string.Empty).ToLower() switch
         {
-            case "london":
-                pop = 8_136_000;
-                break;
-            case "paris":
-                pop = 2_141_000;
-                break;
-            case "monaco":
-                pop = 39_000;
-                break;
-        }
+            "london" => 8_136_000,
+            "paris" => 2_141_000,
+            "monaco" => 39_000,
+            _ => null
+        };
 
         if (pop.HasValue)
         {
