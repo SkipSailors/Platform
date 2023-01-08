@@ -4,7 +4,9 @@ public class Population
 {
     private readonly RequestDelegate? next;
 
-    public Population(){}
+    public Population()
+    {
+    }
 
     public Population(RequestDelegate nextDelegate)
     {
