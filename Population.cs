@@ -1,6 +1,6 @@
 ﻿namespace Platform;
 
-public class Population
+public static class Population
 {
     public static async Task Endpoint(HttpContext context)
     {
