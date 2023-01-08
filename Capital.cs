@@ -22,7 +22,7 @@ public static class Capital
                     .GetPathByRouteValues(context, "population", new { city = country });
                 if (url != null)
                 {
-                    context.Response.Redirect($"/population/{country}");
+                    context.Response.Redirect(url);
                 }
                 return;
         }
