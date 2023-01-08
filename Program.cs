@@ -3,9 +3,6 @@ using Platform;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 WebApplication app = builder.Build();
 
-app.UseMiddleware<Population>();
-app.UseMiddleware<Capital>();
-
 app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
@@ -13,6 +10,13 @@ app.UseEndpoints(endpoints =>
     {
         await context.Response.WriteAsync("Request was routed");
     });
+    endpoints.MapGet("capital/uk", new Capital().Invoke);
+    endpoints.MapGet("population/paris", new Population().Invoke);
+});
+
+app.Run(async (context) =>
+{
+    await context.Response.WriteAsync("Terminal Middleware Reached");
 });
 
 app.Run();
