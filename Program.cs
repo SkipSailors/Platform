@@ -1,51 +1,47 @@
 using Platform;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-builder.Services.Configure<MessageOptions>(options =>
+builder.Services.Configure<RouteOptions>(opts =>
 {
-    options.CityName = "Albany";
+    opts.ConstraintMap.Add("countryName", typeof(CountryRouteConstraint));
 });
 
 WebApplication app = builder.Build();
 
-app.Map("/branch", branch =>
-{
-    branch.Run(new QueryStringMiddleware().Invoke);
-});
-
 app.Use(async (context, next) =>
 {
-    await next();
-    await context.Response.WriteAsync($"\nStatus Code: {context.Response.StatusCode}");
-});
-
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path == "/short")
+    Endpoint? end = context.GetEndpoint();
+    if (end != null)
     {
-        await context.Response.WriteAsync("Request Short Circuited");
+        await context.Response.WriteAsync($"{end.DisplayName} selected\n");
     }
     else
     {
-        await next();
-    }
-});
-
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == HttpMethods.Get && context.Request.Query["custom"] == "true")
-    {
-        context.Response.ContentType = "text/plain";
-        await context.Response.WriteAsync("Custom Middleware \n");
+        await context.Response.WriteAsync("no endpoint selected\n");
     }
 
     await next();
 });
 
-app.UseMiddleware<QueryStringMiddleware>();
-app.UseMiddleware<LocationMiddleware>();
+app
+    .Map("{number:int}", async context =>
+    {
+        await context.Response.WriteAsync("Routed to the int endpoint\n");
+    })
+    .WithDisplayName("Int Endpoint")
+    .Add(b => ((RouteEndpointBuilder)b).Order = 1);
+app
+    .Map("{number:double}",
+        async context =>
+        {
+            await context.Response.WriteAsync("Routed to the double endpoint\n");
+        })
+    .WithDisplayName("Double Endpoint")
+    .Add(b => ((RouteEndpointBuilder)b).Order = 2);
 
-app.MapGet("/", () => "Hello World!");
+app.MapFallback(async context =>
+{
+    await context.Response.WriteAsync("Routed to fallback endpoint\n");
+});
 
 app.Run();
