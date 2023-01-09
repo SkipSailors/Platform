@@ -4,8 +4,8 @@ public static class Population
 {
     public static async Task Endpoint(HttpContext context)
     {
-        string? city = context.Request.RouteValues["city"] as string;
-        int? pop = (city ?? string.Empty).ToLower() switch
+        string city = context.Request.RouteValues["city"] as string ?? "london";
+        int? pop = city.ToLower() switch
         {
             "london" => 8_136_000,
             "paris" => 2_141_000,
