@@ -8,14 +8,19 @@ builder.Services.Configure<RouteOptions>(opts =>
 
 WebApplication app = builder.Build();
 
-app.Map("{numberr:int}", async context =>
-{
-    await context.Response.WriteAsync("Routed to the int endpoint\n");
-});
-app.Map("{numberr:double}", async context =>
-{
-    await context.Response.WriteAsync("Routed to the double endpoint\n");
-});
+app
+    .Map("{number:int}", async context =>
+    {
+        await context.Response.WriteAsync("Routed to the int endpoint\n");
+    })
+    .Add(b => ((RouteEndpointBuilder)b).Order = 1);
+app
+    .Map("{number:double}",
+        async context =>
+        {
+            await context.Response.WriteAsync("Routed to the double endpoint\n");
+        })
+    .Add(b => ((RouteEndpointBuilder)b).Order = 2);
 
 app.MapFallback(async context =>
 {
