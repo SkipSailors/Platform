@@ -8,11 +8,15 @@ builder.Services.Configure<RouteOptions>(opts =>
 
 WebApplication app = builder.Build();
 
-app.MapGet("capital/{country:countryName}", Capital.Endpoint);
-app.MapGet("capital/{country:regex(^uk|france|monaco$)}", Capital.Endpoint);
-app
-    .MapGet("size/{city?}", Population.Endpoint)
-    .WithMetadata(new RouteNameMetadata("population"));
+app.Map("{numberr:int}", async context =>
+{
+    await context.Response.WriteAsync("Routed to the int endpoint\n");
+});
+app.Map("{numberr:double}", async context =>
+{
+    await context.Response.WriteAsync("Routed to the double endpoint\n");
+});
+
 app.MapFallback(async context =>
 {
     await context.Response.WriteAsync("Routed to fallback endpoint\n");
