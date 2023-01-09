@@ -3,7 +3,7 @@ using Platform;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 WebApplication app = builder.Build();
 
-app.MapGet("{first}/{second:bool}", async (context) =>
+app.MapGet("{first:alpha:length(3)}/{second:bool}", async (context) =>
 {
     await context.Response.WriteAsync("Request was routed\n");
     foreach (KeyValuePair<string, object?> kvp in context.Request.RouteValues)
