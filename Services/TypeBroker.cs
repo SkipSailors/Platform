@@ -2,7 +2,6 @@
 {
     public static class TypeBroker
     {
-        private static readonly IResponseFormatter formatter = new HtmlResponseFormatter();
-        public static IResponseFormatter Formatter => formatter;
+        public static IResponseFormatter Formatter { get; } = new HtmlResponseFormatter();
     }
 }
