@@ -12,7 +12,7 @@ app.MapGet(
     {
         await formatter.Format(context, "Middleare Function: It is snowing in Chicago");
     });
-app.MapGet("middleware/class", WeatherEndpoint.Endpoint);
+app.MapWeather("endpoint/class");
 app.MapGet(
     "endpoint/function",
     async (HttpContext context, IResponseFormatter formatter) =>
