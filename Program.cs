@@ -2,7 +2,7 @@ using Platform;
 using Platform.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<IResponseFormatter, HtmlResponseFormatter>();
+builder.Services.AddTransient<IResponseFormatter, GuidService>();
 
 WebApplication app = builder.Build();
 app.UseMiddleware<WeatherMiddleware>();
