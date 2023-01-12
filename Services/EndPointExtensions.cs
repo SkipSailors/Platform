@@ -1,15 +1,23 @@
-﻿namespace Platform.Services
+﻿namespace Platform.Services;
+
+using System.Reflection;
+
+public static class EndPointExtensions
 {
-    public static class EndPointExtensions
+    public static void MapEndpoint<T>(
+        this IEndpointRouteBuilder app,
+        string path,
+        string methodName = "Endpoint")
     {
-        public static void MapWeather(this IEndpointRouteBuilder app, string path)
+        MethodInfo? methodInfo = typeof(T).GetMethod(methodName);
+        if (methodInfo == null || methodInfo.ReturnType != typeof(Task))
         {
-            IResponseFormatter formatter = app
-                .ServiceProvider
-                .GetRequiredService<IResponseFormatter>();
-            app.MapGet(
-                path,
-                context => Platform.WeatherEndpoint.Endpoint(context, formatter));
+            throw new Exception("Method cannot be used");
         }
+
+        T endpointInstance = ActivatorUtilities.CreateInstance<T>(app.ServiceProvider);
+        app.MapGet(
+            path,
+            (RequestDelegate)methodInfo.CreateDelegate(typeof(RequestDelegate), endpointInstance));
     }
 }

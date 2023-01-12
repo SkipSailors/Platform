@@ -10,9 +10,9 @@ app.MapGet(
     "middleware/function",
     async (HttpContext context, IResponseFormatter formatter) =>
     {
-        await formatter.Format(context, "Middleare Function: It is snowing in Chicago");
+        await formatter.Format(context, "Middleware Function: It is snowing in Chicago");
     });
-app.MapWeather("endpoint/class");
+app.MapEndpoint<WeatherEndpoint>("endpoint/class");
 app.MapGet(
     "endpoint/function",
     async (HttpContext context, IResponseFormatter formatter) =>
