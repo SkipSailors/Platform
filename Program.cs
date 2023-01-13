@@ -2,7 +2,8 @@ using Platform;
 using Platform.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped<IResponseFormatter, GuidService>();
+builder.Services.AddScoped<IResponseFormatter, TimeResponseFormatter>();
+builder.Services.AddScoped<ITimeStamper, DefaultTimeStamper>();
 
 WebApplication app = builder.Build();
 app.UseMiddleware<WeatherMiddleware>();
