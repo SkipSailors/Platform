@@ -3,15 +3,18 @@ using Platform.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IWebHostEnvironment env = builder.Environment;
-if (env.IsDevelopment())
+IConfiguration config = builder.Configuration;
+
+builder.Services.AddScoped<IResponseFormatter>(serviceProvider =>
 {
-    builder.Services.AddScoped<IResponseFormatter, TimeResponseFormatter>();
-    builder.Services.AddScoped<ITimeStamper, DefaultTimeStamper>();
-}
-else
-{
-    builder.Services.AddScoped<IResponseFormatter, HtmlResponseFormatter>();
-}
+    string? typeName = config["services:IResponseFormatter"];
+    return (IResponseFormatter)ActivatorUtilities.CreateInstance(
+        serviceProvider,
+        typeName == null
+            ? typeof(GuidService)
+            : Type.GetType(typeName, true)!);
+});
+builder.Services.AddScoped<ITimeStamper, DefaultTimeStamper>();
 
 WebApplication app = builder.Build();
 app.UseMiddleware<WeatherMiddleware>();
@@ -24,7 +27,7 @@ app.MapGet(
 app.MapEndpoint<WeatherEndpoint>("endpoint/class");
 app.MapGet(
     "endpoint/function",
-    async (HttpContext context) =>
+    async context =>
     {
         IResponseFormatter formatter = context.RequestServices.GetRequiredService<IResponseFormatter>();
         await formatter.Format(context, "Endpoint Function: It is sunny in LA");
