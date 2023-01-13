@@ -15,15 +15,17 @@ public static class EndPointExtensions
             throw new Exception("Method cannot be used");
         }
 
-        T endpointInstance = ActivatorUtilities.CreateInstance<T>(app.ServiceProvider);
         ParameterInfo[] methodParams = methodInfo!.GetParameters();
         app.MapGet(
             path,
             context =>
-                (Task)methodInfo.Invoke(
-                    endpointInstance,
+            {
+                T endpointInstance = ActivatorUtilities.CreateInstance<T>(context.RequestServices);
+                return (Task)methodInfo.Invoke(
+                    endpointInstance!,
                     methodParams.Select(p => p.ParameterType == typeof(HttpContext)
                         ? context
-                        : context.RequestServices.GetService(p.ParameterType)).ToArray())!);
+                        : context.RequestServices.GetService(p.ParameterType)).ToArray())!;
+            });
     }
 }
