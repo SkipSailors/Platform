@@ -15,4 +15,6 @@ public class HtmlResponseFormatter : IResponseFormatter
 </body>
 </httml>");
     }
+
+    public bool RichOutput => true;
 }
