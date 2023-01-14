@@ -1,6 +1,6 @@
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton(typeof(ICollection<>), typeof(IList<>));
+builder.Services.AddSingleton(typeof(ICollection<>), typeof(List<>));
 
 WebApplication app = builder.Build();
 
