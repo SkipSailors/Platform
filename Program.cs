@@ -11,7 +11,7 @@ app.UseMiddleware<LocationMiddleware>();
 app.MapGet("config", async (HttpContext context, IConfiguration configuration) =>
 {
     string defaultDebug = configuration["Logging:LogLevel:Default"];
-    await context.Response.WriteAsync($"The config setting is {defaultDebug}");
+    await context.Response.WriteAsync($"The config setting is {defaultDebug}\n");
     string environ = configuration["ASPNETCORE_ENVIRONMENT"];
     await context.Response.WriteAsync($"The env setting is {environ}");
 });
