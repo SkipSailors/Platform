@@ -1,47 +1,26 @@
-using Platform;
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.Configure<RouteOptions>(opts =>
-{
-    opts.ConstraintMap.Add("countryName", typeof(CountryRouteConstraint));
-});
+
+builder.Services.AddSingleton(typeof(ICollection<>), typeof(IList<>));
 
 WebApplication app = builder.Build();
 
-app.Use(async (context, next) =>
+app.MapGet("string", async context =>
 {
-    Endpoint? end = context.GetEndpoint();
-    if (end != null)
+    ICollection<string> collection = context.RequestServices.GetRequiredService<ICollection<string>>();
+    collection.Add($"Request: {DateTime.Now.ToLongTimeString()}");
+    foreach (string str in collection)
     {
-        await context.Response.WriteAsync($"{end.DisplayName} selected\n");
+        await context.Response.WriteAsync($"String: {str}\n");
     }
-    else
-    {
-        await context.Response.WriteAsync("no endpoint selected\n");
-    }
-
-    await next();
 });
-
-app
-    .Map("{number:int}", async context =>
-    {
-        await context.Response.WriteAsync("Routed to the int endpoint\n");
-    })
-    .WithDisplayName("Int Endpoint")
-    .Add(b => ((RouteEndpointBuilder)b).Order = 1);
-app
-    .Map("{number:double}",
-        async context =>
-        {
-            await context.Response.WriteAsync("Routed to the double endpoint\n");
-        })
-    .WithDisplayName("Double Endpoint")
-    .Add(b => ((RouteEndpointBuilder)b).Order = 2);
-
-app.MapFallback(async context =>
+app.MapGet("int", async context =>
 {
-    await context.Response.WriteAsync("Routed to fallback endpoint\n");
+    ICollection<int> collection = context.RequestServices.GetRequiredService<ICollection<int>>();
+    collection.Add(collection.Count + 1);
+    foreach (int val in collection)
+    {
+        await context.Response.WriteAsync($"Int: {val}\n");
+    }
 });
 
 app.Run();
