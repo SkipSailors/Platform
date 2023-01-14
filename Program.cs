@@ -12,6 +12,8 @@ app.MapGet("config", async (HttpContext context, IConfiguration configuration) =
 {
     string defaultDebug = configuration["Logging:LogLevel:Default"];
     await context.Response.WriteAsync($"The config setting is {defaultDebug}");
+    string environ = configuration["ASPNETCORE_ENVIRONMENT"];
+    await context.Response.WriteAsync($"The env setting is {environ}");
 });
 
 app.MapGet("/", async context =>
