@@ -1,26 +1,25 @@
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.FileProviders;
+using Platform;
 
-builder.Services.AddSingleton(typeof(ICollection<>), typeof(List<>));
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpLogging(opts =>
+{
+    opts.LoggingFields = HttpLoggingFields.RequestMethod |
+                         HttpLoggingFields.RequestPath |
+                         HttpLoggingFields.ResponseStatusCode;
+});
 
 WebApplication app = builder.Build();
 
-app.MapGet("string", async context =>
+app.UseHttpLogging();
+IWebHostEnvironment env = app.Environment;
+app.UseStaticFiles(new StaticFileOptions
 {
-    ICollection<string> collection = context.RequestServices.GetRequiredService<ICollection<string>>();
-    collection.Add($"Request: {DateTime.Now.ToLongTimeString()}");
-    foreach (string str in collection)
-    {
-        await context.Response.WriteAsync($"String: {str}\n");
-    }
+    FileProvider = new PhysicalFileProvider($"{env.ContentRootPath}/staticFiles"),
+    RequestPath = "/files"
 });
-app.MapGet("int", async context =>
-{
-    ICollection<int> collection = context.RequestServices.GetRequiredService<ICollection<int>>();
-    collection.Add(collection.Count + 1);
-    foreach (int val in collection)
-    {
-        await context.Response.WriteAsync($"Int: {val}\n");
-    }
-});
+
+app.MapGet("population/{city?}", Population.Endpoint);
 
 app.Run();
