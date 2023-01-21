@@ -1,3 +1,5 @@
+using Platform;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<CookiePolicyOptions>(opts =>
 {
@@ -5,6 +7,7 @@ builder.Services.Configure<CookiePolicyOptions>(opts =>
 });
 WebApplication app = builder.Build();
 app.UseCookiePolicy();
+app.UseMiddleware<ConsentMiddleware>();
 app.MapGet("/cookie", async context =>
 {
     int counter1 = int.Parse(context.Request.Cookies["counter1"] ?? "0") + 1;
