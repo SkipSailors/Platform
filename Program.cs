@@ -6,10 +6,19 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/error.html");
     app.UseStaticFiles();
 }
-
-app.Run(context =>
+app.UseStatusCodePages("text/html", Platform.Responses.DefaultResponse);
+app.Use(async (context, next) =>
 {
-    throw new Exception("Something has gone wrong");
+    if (context.Request.Path == "/error")
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        await Task.CompletedTask;
+    }
+    else
+    {
+        await next();
+    }
 });
+app.Run(context => throw new Exception("Something has gone wrong"));
 
 app.Run();
