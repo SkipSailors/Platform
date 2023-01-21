@@ -19,5 +19,9 @@ app.MapGet("/session", async context =>
     await context.Session.CommitAsync();
     await context.Response.WriteAsync($"Counter1: {counter1}, Counter2: {counter2}");
 });
-app.MapFallback(async context => await context.Response.WriteAsync("Hello World"));
+app.MapFallback(async context =>
+{
+    await context.Response.WriteAsync($"{context.Request.IsHttps}\n");
+    await context.Response.WriteAsync("Hello World");
+});
 app.Run();
