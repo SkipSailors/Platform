@@ -1,25 +1,31 @@
-using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.Extensions.FileProviders;
-using Platform;
+using Microsoft.AspNetCore.HostFiltering;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddHttpLogging(opts =>
+builder.Services.Configure<HostFilteringOptions>(opts =>
 {
-    opts.LoggingFields = HttpLoggingFields.RequestMethod |
-                         HttpLoggingFields.RequestPath |
-                         HttpLoggingFields.ResponseStatusCode;
+    opts.AllowedHosts.Clear();
+    opts.AllowedHosts.Add("*.example.com");
 });
 
 WebApplication app = builder.Build();
-
-app.UseHttpLogging();
-IWebHostEnvironment env = app.Environment;
-app.UseStaticFiles(new StaticFileOptions
+if (!app.Environment.IsDevelopment())
 {
-    FileProvider = new PhysicalFileProvider($"{env.ContentRootPath}/staticFiles"),
-    RequestPath = "/files"
+    app.UseExceptionHandler("/error.html");
+    app.UseStaticFiles();
+}
+app.UseStatusCodePages("text/html", Platform.Responses.DefaultResponse);
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/error")
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        await Task.CompletedTask;
+    }
+    else
+    {
+        await next();
+    }
 });
-
-app.MapGet("population/{city?}", Population.Endpoint);
+app.Run(context => throw new Exception("Something has gone wrong"));
 
 app.Run();

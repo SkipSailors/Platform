@@ -1,0 +1,40 @@
+﻿namespace Platform;
+
+using Microsoft.AspNetCore.Http.Features;
+
+public class ConsentMiddleware
+{
+    private RequestDelegate next;
+
+    public ConsentMiddleware(RequestDelegate nextDelegate)
+    {
+        next = nextDelegate;
+    }
+
+    public async Task Invoke(HttpContext context)
+    {
+        if (context.Request.Path == "/consent")
+        {
+            ITrackingConsentFeature? consentFeature = context.Features.Get<ITrackingConsentFeature>();
+            if (consentFeature != null)
+            {
+                if (!consentFeature.HasConsent)
+                {
+                    consentFeature.GrantConsent();
+                }
+                else
+                {
+                    consentFeature.WithdrawConsent();
+                }
+
+                await context.Response.WriteAsync(consentFeature.HasConsent
+                    ? "Consent Granted\n"
+                    : "Consent withdrawn\n");
+            }
+        }
+        else
+        {
+            await next(context);
+        }
+    }
+}
