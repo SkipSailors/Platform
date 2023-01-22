@@ -13,10 +13,13 @@ public class SumEndpoint
     {
         int.TryParse((string?)context.Request.RouteValues["count"], out int count);
         long total = 0;
-        for (int i = 1; i <= count; i++) total += i;
+        for (int i = 1; i <= count; i++)
+        {
+            total += i;
+        }
 
         string totalString = $"({DateTime.Now.ToLongTimeString()}) {total}";
-        context.Response.Headers["CacheControl"] = "public, max-age=120";
+        context.Response.Headers["Cache-Control"] = "public, max-age=120";
         string? url = generator.GetPathByRouteValues(context, null, new { count });
         await formatter.Format(
             context,
