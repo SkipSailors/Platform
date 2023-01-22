@@ -1,6 +1,13 @@
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-WebApplication app = builder.Build();
+using Microsoft.AspNetCore.HostFiltering;
 
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<HostFilteringOptions>(opts =>
+{
+    opts.AllowedHosts.Clear();
+    opts.AllowedHosts.Add("*.example.com");
+});
+
+WebApplication app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/error.html");
