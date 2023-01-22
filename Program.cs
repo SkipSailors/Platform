@@ -2,9 +2,9 @@ using Platform;
 using Platform.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDistributedSqlerverCache(opts =>
+builder.Services.AddDistributedSqlServerCache(opts =>
 {
-    opts.ConnectonString = builder.Configuraation["ConnectionStrings:CacheConnection"];
+    opts.ConnectionString = builder.Configuration["ConnectionStrings:CacheConnection"];
     opts.SchemaName = "dbo";
     opts.TableName = "DataCache";
 });
