@@ -2,9 +2,11 @@ using Platform;
 using Platform.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDistributedMemoryCache(opts =>
+builder.Services.AddDistributedSqlerverCache(opts =>
 {
-    opts.SizeLimit = 200;
+    opts.ConnectonString = builder.Configuraation["ConnectionStrings:CacheConnection"];
+    opts.SchemaName = "dbo";
+    opts.TableName = "DataCache";
 });
 
 WebApplication app = builder.Build();
