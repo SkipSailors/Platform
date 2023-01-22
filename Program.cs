@@ -4,7 +4,7 @@ using Platform.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 WebApplication app = builder.Build();
 
-app.MapEndpoint<SumEndpoint>("/sum/{count:int=1000000000");
+app.MapEndpoint<SumEndpoint>("/sum/{count:int=1000000000}");
 app.MapGet("/", async context =>
 {
     await context.Response.WriteAsync("Hello World");
