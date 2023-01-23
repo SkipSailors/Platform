@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Platform;
+using Platform.Models;
 using Platform.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,10 @@ builder.Services.AddDistributedSqlServerCache(opts =>
 });
 builder.Services.AddResponseCaching();
 builder.Services.AddSingleton<IResponseFormatter, HtmlResponseFormatter>();
+builder.Services.AddDbContext<CalculationContext>(opts =>
+{
+    opts.UseSqlServer(builder.Configuration["ConnectionStrings:CalcConnection"]);
+});
 
 WebApplication app = builder.Build();
 app.UseResponseCaching();
