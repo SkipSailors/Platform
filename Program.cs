@@ -21,7 +21,10 @@ builder.Services.AddTransient<SeedData>();
 WebApplication app = builder.Build();
 app.UseResponseCaching();
 app.MapEndpoint<SumEndpoint>("/sum/{count:int=1000000000}");
-app.MapGet("/", async context => { await context.Response.WriteAsync("Hello World"); });
+app.MapGet("/", async context =>
+{
+    await context.Response.WriteAsync("Hello World");
+});
 
 bool cmdLineInit = (app.Configuration["INITDB"] ?? "false") == "true";
 if (app.Environment.IsDevelopment() || cmdLineInit)
