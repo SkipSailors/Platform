@@ -1,31 +1,44 @@
-using Microsoft.AspNetCore.HostFiltering;
+using Microsoft.EntityFrameworkCore;
+using Platform;
+using Platform.Models;
+using Platform.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.Configure<HostFilteringOptions>(opts =>
+builder.Services.AddDistributedSqlServerCache(opts =>
 {
-    opts.AllowedHosts.Clear();
-    opts.AllowedHosts.Add("*.example.com");
+    opts.ConnectionString = builder.Configuration["ConnectionStrings:CacheConnection"];
+    opts.SchemaName = "dbo";
+    opts.TableName = "DataCache";
 });
+builder.Services.AddResponseCaching();
+builder.Services.AddSingleton<IResponseFormatter, HtmlResponseFormatter>();
+builder.Services.AddDbContext<CalculationContext>(opts =>
+{
+    opts.UseSqlServer(builder.Configuration["ConnectionStrings:CalcConnection"]);
+    opts.EnableSensitiveDataLogging();
+});
+builder.Services.AddTransient<SeedData>();
 
 WebApplication app = builder.Build();
-if (!app.Environment.IsDevelopment())
+app.UseResponseCaching();
+app.MapEndpoint<SumEndpoint>("/sum/{count:int=1000000000}");
+app.MapGet("/", async context =>
 {
-    app.UseExceptionHandler("/error.html");
-    app.UseStaticFiles();
-}
-app.UseStatusCodePages("text/html", Platform.Responses.DefaultResponse);
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path == "/error")
-    {
-        context.Response.StatusCode = StatusCodes.Status404NotFound;
-        await Task.CompletedTask;
-    }
-    else
-    {
-        await next();
-    }
+    await context.Response.WriteAsync("Hello World");
 });
-app.Run(context => throw new Exception("Something has gone wrong"));
 
-app.Run();
+bool cmdLineInit = (app.Configuration["INITDB"] ?? "false") == "true";
+if (app.Environment.IsDevelopment() || cmdLineInit)
+{
+    SeedData seedData = app
+        .Services
+        .CreateScope()
+        .ServiceProvider
+        .GetRequiredService<SeedData>();
+    seedData.SeedDatabase();
+}
+
+if (!cmdLineInit)
+{
+    app.Run();
+}
