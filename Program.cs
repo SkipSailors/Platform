@@ -29,7 +29,11 @@ app.MapGet("/", async context =>
 bool cmdLineInit = (app.Configuration["INITDB"] ?? "false") == "true";
 if (app.Environment.IsDevelopment() || cmdLineInit)
 {
-    SeedData seedData = app.Services.GetRequiredService<SeedData>();
+    SeedData seedData = app
+        .Services
+        .CreateScope()
+        .ServiceProvider
+        .GetRequiredService<SeedData>();
     seedData.SeedDatabase();
 }
 
